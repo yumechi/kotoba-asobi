@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+</head>
+
+<body>
+  <div id="app">
+    <h2>すでに埋まったもの</h2>
+    <input type=text id=defined-words placeholder="宣言済みのひらがな列" v-model="defined_words"></input>
+    <h2>候補値</h2>
+    <ul id="v-for-object" class="possibility-data">
+      <li v-for="prefecture in possibility">
+        {{ prefecture }}
+      </li>
+    </ul>
+    <h2>候補外</h2>
+    <ul id="v-for-object" class="possibility-data">
+      <li v-for="prefecture in impossibility">
+        {{ prefecture }}
+      </li>
+    </ul>
+  </div>
+  <script src="https://unpkg.com/vue@3.2.27/dist/vue.global.js"></script>
+  <script>
+    function convertHiraganaSmallToBig(s) {
+      // このままだとっ、ょがヒットしないので暫定対応
+      var replaced = s;
+      const pattern = [
+        ["ょ", "よ"],
+        ["っ", "つ"],
+      ];
+      for (const t of pattern) {
+        replaced = replaced.replace(t[0], t[1]);
+      }
+      return replaced;
+    }
+
+
+    const HelloVueApp = {
+      data() {
+        const prefectures = [
+          "ほっかいどう",
+          "あおもり",
+          "いわて",
+          "みやぎ",
+          "あきた",
+          "やまがた",
+          "ふくしま",
+          "いばらき",
+          "とちぎ",
+          "ぐんま",
+          "さいたま",
+          "ちば",
+          "とうきょう",
+          "かながわ",
+          "にいがた",
+          "とやま",
+          "いしかわ",
+          "ふくい",
+          "やまなし",
+          "ながの",
+          "ぎふ",
+          "しずおか",
+          "あいち",
+          "みえ",
+          "しが",
+          "きょうと",
+          "おおさか",
+          "ひょうご",
+          "なら",
+          "わかやま",
+          "とっとり",
+          "しまね",
+          "おかやま",
+          "ひろしま",
+          "やまぐち",
+          "とくしま",
+          "かがわ",
+          "えひめ",
+          "こうち",
+          "ふくおか",
+          "さが",
+          "ながさき",
+          "くまもと",
+          "おおいた",
+          "みやざき",
+          "かごしま",
+          "おきなわ",
+        ];
+        return {
+          defined_words: "",
+          prefectures: prefectures,
+        }
+      },
+      computed: {
+        possibility() {
+          const defined_words_splitted = this.defined_words.split("");
+          const possibility_prefectures = this.prefectures.filter(
+            function (v) {
+              for (const t of defined_words_splitted) {
+                if (convertHiraganaSmallToBig(v).normalize('NFD').indexOf(t) >= 0) return false;
+              }
+              return true;
+            }
+          )
+          return possibility_prefectures;
+        },
+        impossibility() {
+          const defined_words_splitted = this.defined_words.split("");
+          const unpossibility_prefectures = this.prefectures.filter(
+            function (v) {
+              for (const t of defined_words_splitted) {
+                if (convertHiraganaSmallToBig(v).normalize('NFD').indexOf(t) >= 0) return true;
+              }
+              return false;
+            }
+          )
+          return unpossibility_prefectures;
+        },
+      }
+    }
+    Vue.createApp(HelloVueApp).mount('#app')
+  </script>
+</body>
+
+</html>
